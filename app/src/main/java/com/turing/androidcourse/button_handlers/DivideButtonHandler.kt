@@ -3,6 +3,7 @@ package com.turing.androidcourse.button_handlers
 import android.content.Context
 import android.widget.EditText
 import android.widget.TextView
+import com.turing.androidcourse.R
 
 /**
  * Обработчик события клика на кнопку деления
@@ -18,12 +19,12 @@ class DivideButtonHandler(
     override fun doHandle() {
         operationResult = editTexts[0].text.toString().toDouble()
 
-        for (editText in editTexts.subList(1, editTexts.size)) {
-            if (editText.text.toString().toDouble() == 0.0) {
-                makeToast("Ты бля очкошник на ноль мы не делим (мы школота)")
+        for (i in 1 until editTexts.size) {
+            if (editTexts[i].text.toString().toDouble() == 0.0) {
+                makeToast(context.getString(R.string.division_error_txt))
                 return
             }
-            operationResult /= editText.text.toString().toDouble()
+            operationResult /= editTexts[i].text.toString().toDouble()
         }
     }
 }

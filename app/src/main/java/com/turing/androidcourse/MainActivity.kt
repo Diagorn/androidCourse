@@ -35,54 +35,80 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
-        var editTextList = listOf(
-            binding.editTextArgument1, binding.editTextArgument2
-        )
+        with(binding) {
+            setContentView(root)
 
-        handlersMap = mapOf(
-            binding.buttonPlus.id to PlusButtonHandler(editTextList, binding.resultTextView, this),
-            binding.buttonMinus.id to MinusButtonHandler(editTextList, binding.resultTextView, this),
-            binding.buttonMultiply.id to MultiplyButtonHandler(editTextList, binding.resultTextView, this),
-            binding.buttonDivide.id to DivideButtonHandler(editTextList, binding.resultTextView, this),
-        )
+            val editTextList = listOf(
+                editTextArgument1, editTextArgument2
+            )
+
+            handlersMap = mapOf(
+                buttonPlus.id to PlusButtonHandler(
+                    editTextList,
+                    binding.resultTextView,
+                    this@MainActivity
+                ),
+                buttonMinus.id to MinusButtonHandler(
+                    editTextList,
+                    binding.resultTextView,
+                    this@MainActivity
+                ),
+                buttonMultiply.id to MultiplyButtonHandler(
+                    editTextList,
+                    binding.resultTextView,
+                    this@MainActivity
+                ),
+                buttonDivide.id to DivideButtonHandler(
+                    editTextList,
+                    binding.resultTextView,
+                    this@MainActivity
+                ),
+            )
+
+        }
 
         setOnClickListeners()
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        outState.putString(FIRST_EDIT_TEXT_ID, binding.editTextArgument1.text.toString())
-        outState.putString(SECOND_EDIT_TEXT_ID, binding.editTextArgument2.text.toString())
-        outState.putString(RESULT_TEXT_ID, binding.resultTextView.text.toString())
+        with(binding) {
+            outState.putString(FIRST_EDIT_TEXT_ID, editTextArgument1.text.toString())
+            outState.putString(SECOND_EDIT_TEXT_ID, editTextArgument2.text.toString())
+            outState.putString(RESULT_TEXT_ID, resultTextView.text.toString())
+        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        binding.editTextArgument1.setText(savedInstanceState.getString(FIRST_EDIT_TEXT_ID))
-        binding.editTextArgument2.setText(savedInstanceState.getString(SECOND_EDIT_TEXT_ID))
-        binding.resultTextView.text = savedInstanceState.getString(RESULT_TEXT_ID)
+        with(binding) {
+            editTextArgument1.setText(savedInstanceState.getString(FIRST_EDIT_TEXT_ID))
+            editTextArgument2.setText(savedInstanceState.getString(SECOND_EDIT_TEXT_ID))
+            resultTextView.text = savedInstanceState.getString(RESULT_TEXT_ID)
+        }
     }
 
     private fun setOnClickListeners() {
-        binding.buttonPlus.setOnClickListener {
-            handlersMap[binding.buttonPlus.id]?.handle()
-        }
+        with(binding) {
+            buttonPlus.setOnClickListener {
+                handlersMap[buttonPlus.id]?.handle()
+            }
 
-        binding.buttonMinus.setOnClickListener {
-            handlersMap[binding.buttonMinus.id]?.handle()
-        }
+            buttonMinus.setOnClickListener {
+                handlersMap[buttonMinus.id]?.handle()
+            }
 
-        binding.buttonMultiply.setOnClickListener {
-            handlersMap[binding.buttonMultiply.id]?.handle()
-        }
+            buttonMultiply.setOnClickListener {
+                handlersMap[buttonMultiply.id]?.handle()
+            }
 
-        binding.buttonDivide.setOnClickListener {
-            handlersMap[binding.buttonDivide.id]?.handle()
-        }
+            buttonDivide.setOnClickListener {
+                handlersMap[buttonDivide.id]?.handle()
+            }
 
-        binding.aboutButton.setOnClickListener {
-            val intent = Intent(this, AboutActivity::class.java)
-            startActivity(intent)
+            aboutButton.setOnClickListener {
+                val intent = Intent(this@MainActivity, AboutActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 }

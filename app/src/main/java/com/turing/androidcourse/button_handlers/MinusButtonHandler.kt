@@ -18,8 +18,8 @@ class MinusButtonHandler(
     override fun doHandle() {
         operationResult = editTexts[0].text.toString().toDouble()
 
-        for (editText in editTexts.subList(1, editTexts.size)) {
-            operationResult -= editText.text.toString().toDouble()
+        for (i in 1 until editTexts.size) {
+            operationResult -= editTexts[i].text.toString().toDouble()
         }
     }
 }

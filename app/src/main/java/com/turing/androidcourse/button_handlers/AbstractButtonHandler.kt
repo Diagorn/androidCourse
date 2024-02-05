@@ -18,13 +18,13 @@ import androidx.core.content.ContextCompat.getSystemService
  */
 abstract class AbstractButtonHandler(
     val editTexts: List<EditText>,
-    val resultTextView: TextView,
-    private val context: Context
+    private val resultTextView: TextView,
+    protected val context: Context
 ) {
     /**
      * Переменная подсчета результата операции
      */
-    var operationResult: Double = 0.0
+    protected var operationResult: Double = 0.0
 
     /**
      * Обработка клика
@@ -58,6 +58,11 @@ abstract class AbstractButtonHandler(
     }
 
     /**
+     * Непосредственная логика обработки клика
+     */
+    protected abstract fun doHandle()
+
+    /**
      * Отключить клавиатуру инпута и снять с него фокус
      * @param editText - инпут, с которым работаем
      */
@@ -66,9 +71,4 @@ abstract class AbstractButtonHandler(
         val imm = getSystemService(context, InputMethodManager::class.java)
         imm?.hideSoftInputFromWindow(editText.windowToken, 0)
     }
-
-    /**
-     * Непосредственная логика обработки клика
-     */
-    abstract fun doHandle()
 }

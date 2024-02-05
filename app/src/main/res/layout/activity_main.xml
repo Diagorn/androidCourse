@@ -52,10 +52,12 @@
 
     <EditText
         android:id="@+id/edit_text_argument1"
-        android:layout_width="380dp"
-        android:layout_height="47dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:ems="10"
         android:inputType="number"
+        app:layout_constraintWidth_percent="0.8"
+        app:layout_constraintHeight_percent="0.05"
         app:layout_constraintBottom_toTopOf="@+id/button_minus"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,10 +65,12 @@
 
     <EditText
         android:id="@+id/edit_text_argument2"
-        android:layout_width="380dp"
-        android:layout_height="47dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:ems="10"
         android:inputType="number"
+        app:layout_constraintWidth_percent="0.8"
+        app:layout_constraintHeight_percent="0.05"
         app:layout_constraintBottom_toTopOf="@+id/button_minus"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
