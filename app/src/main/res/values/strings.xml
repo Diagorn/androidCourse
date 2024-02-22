@@ -1,12 +1,18 @@
 <resources>
-    <string name="app_name">Конвертер величин</string>
+    <string name="app_name">Активисты тьюринга</string>
 
-    <string name="weight_radio_button_name">Вес</string>
-    <string name="length_radio_button_name">Длина</string>
-    <string name="currency_radio_button_name">Валюта</string>
-    <string name="convert_button_name">Конвертировать</string>
+    <string name="add_button_text">Добавить активиста</string>
+    <string name="add_person_button_text">Добавить</string>
+    <string name="delete_person_text">Удалить</string>
+    <string name="fuck_off_text">Пойти нахуй</string>
+    <string name="delalis_person_msg">%1$s шлет тебя нахуй</string>
 
-    <string name="conversion_empty_input">Че ты конвертировать собрался еблоид</string>
-    <string name="conversion_below_zero_input">А ты сам выблядок как думаешь</string>
-    <string name="conversion_success">Омерика сасатб!!!</string>
+    <string name="turing_person_name_string">%1$s %2$s, %3$d</string>
+    <string name="position_curator">Куратор</string>
+    <string name="position_student">Студент</string>
+
+    <string name="person_name"><b>Имя</b></string>
+    <string name="person_surname"><b>Фамилия</b></string>
+    <string name="person_age"><b>Возраст</b></string>
+    <string name="avatar_url"><b>Ссылка на картинку</b></string>
 </resources>
