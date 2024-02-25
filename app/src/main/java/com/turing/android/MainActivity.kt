@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        turingPersonDs = (application as PersonsApp).turingPersonDs
+        turingPersonDs = TuringPersonDs.getInstance()
 
         adapter = TuringPersonAdapter(this, object : TuringPersonActionListener {
             override fun onDelete(person: TuringPerson) {
@@ -48,35 +48,32 @@ class MainActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
 
-        binding.turingPersonListView.layoutManager = layoutManager
-        binding.turingPersonListView.adapter = adapter
+        with(binding) {
+            turingPersonListView.layoutManager = layoutManager
+            turingPersonListView.adapter = adapter
+            addButton.setOnClickListener {
+                activityLaunched.launch(turingPersonDs.getNextId())
+            }
+        }
 
-        turingPersonDs.addListeners(listOf(addPersonListener, deletePersonListener))
-
-        turingPersonDs.loadObjects()
-        turingPersonDs.getAll().forEach { addPersonListener.perform(it) }
-
-        binding.addButton.setOnClickListener {
-            activityLaunched.launch(turingPersonDs.getNextId())
+        with(turingPersonDs) {
+            addListeners(listOf(addPersonListener, deletePersonListener))
+            loadObjects()
+            getAll().forEach { item -> addPersonListener.perform(item) }
         }
     }
 
     private val addPersonListener =
         object : DataSourceListener<TuringPerson>(DataSourceAction.INSERT) {
             override fun doPerform(obj: TuringPerson) {
-                adapter.turingPersons.add(obj)
-                adapter.notifyItemInserted(obj.id.toInt() - 1)
+                adapter.addItem(obj)
             }
         }
 
     private val deletePersonListener =
         object : DataSourceListener<TuringPerson>(DataSourceAction.REMOVE) {
             override fun doPerform(obj: TuringPerson) {
-                val index = adapter.turingPersons.indexOfFirst { it.id == obj.id }
-                if (index != -1) { // Объект по айдишнику найден
-                    adapter.turingPersons.removeAt(index)
-                    adapter.notifyItemRemoved(obj.id.toInt() - 1)
-                }
+                adapter.removeItem(obj)
             }
         }
 

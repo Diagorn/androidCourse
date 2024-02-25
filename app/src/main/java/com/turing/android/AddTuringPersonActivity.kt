@@ -2,19 +2,17 @@ package com.turing.android
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.turing.android.databinding.ActivityAddPersonBinding
 import com.turing.android.dto.TuringPerson
-import com.turing.android.utils.isInvalid
 
 /**
  * Активити добавления нового активиста
  *
  * @author Diagorn
  */
-class AddTuringPersonActivity: AppCompatActivity() {
+class AddTuringPersonActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddPersonBinding
 
@@ -24,10 +22,12 @@ class AddTuringPersonActivity: AppCompatActivity() {
         setContentView(binding.root)
 
         binding.addPersonButton.setOnClickListener {
-            if (binding.isInvalid()) {
-                Toast.makeText(this@AddTuringPersonActivity,
-                    "Заполни все поля ублюдок",
-                    Toast.LENGTH_SHORT)
+            if (isFormInvalid()) {
+                Toast.makeText(
+                    this@AddTuringPersonActivity,
+                    getString(R.string.fill_all_fields_toast),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 return@setOnClickListener
             }
@@ -47,12 +47,26 @@ class AddTuringPersonActivity: AppCompatActivity() {
                     finish()
                 }
 
-                val result = Intent()
-                result.putExtra(TURING_PERSON_RESULT, person)
-                setResult(RESULT_OK, result)
+                setResult(RESULT_OK, Intent().also { it.putExtra(TURING_PERSON_RESULT, person) })
                 finish()
             }
         }
+    }
+
+    private fun isFormInvalid(): Boolean {
+        with(binding) {
+            if (
+                !studentRadioButton.isChecked && !curatorRadioButton.isChecked
+                || ageEditText.text.isNullOrEmpty()
+                || avatarUrlEditText.text.isNullOrEmpty()
+                || nameEditText.text.isNullOrEmpty()
+                || surnameEditText.text.isNullOrEmpty()
+            ) {
+                return true
+            }
+        }
+
+        return false
     }
 
     companion object {
