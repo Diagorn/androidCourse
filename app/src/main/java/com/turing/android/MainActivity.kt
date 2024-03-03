@@ -23,18 +23,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: TuringPersonAdapter
-    private lateinit var turingPersonDs: TuringPersonDs
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        turingPersonDs = TuringPersonDs.getInstance()
-
-        adapter = TuringPersonAdapter(this, object : TuringPersonActionListener {
+        adapter = TuringPersonAdapter(object : TuringPersonActionListener {
             override fun onDelete(person: TuringPerson) {
-                turingPersonDs.delete(person)
+                TuringPersonDs.delete(person)
             }
 
             override fun onDetails(person: TuringPerson) {
@@ -52,11 +49,11 @@ class MainActivity : AppCompatActivity() {
             turingPersonListView.layoutManager = layoutManager
             turingPersonListView.adapter = adapter
             addButton.setOnClickListener {
-                activityLaunched.launch(turingPersonDs.getNextId())
+                activityLaunched.launch(TuringPersonDs.getNextId())
             }
         }
 
-        with(turingPersonDs) {
+        with(TuringPersonDs) {
             addListeners(listOf(addPersonListener, deletePersonListener))
             loadObjects()
             getAll().forEach { item -> addPersonListener.perform(item) }
@@ -80,6 +77,6 @@ class MainActivity : AppCompatActivity() {
     private val activityLaunched =
         registerForActivityResult(AddTuringPersonContract()) { newPerson ->
             newPerson ?: return@registerForActivityResult
-            turingPersonDs.add(newPerson)
+            TuringPersonDs.add(newPerson)
         }
 }

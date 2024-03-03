@@ -55,18 +55,12 @@ class AddTuringPersonActivity : AppCompatActivity() {
 
     private fun isFormInvalid(): Boolean {
         with(binding) {
-            if (
-                !studentRadioButton.isChecked && !curatorRadioButton.isChecked
+            return@isFormInvalid !studentRadioButton.isChecked && !curatorRadioButton.isChecked
                 || ageEditText.text.isNullOrEmpty()
                 || avatarUrlEditText.text.isNullOrEmpty()
                 || nameEditText.text.isNullOrEmpty()
                 || surnameEditText.text.isNullOrEmpty()
-            ) {
-                return true
-            }
         }
-
-        return false
     }
 
     companion object {

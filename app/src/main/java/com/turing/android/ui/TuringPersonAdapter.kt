@@ -23,16 +23,18 @@ import kotlin.system.exitProcess
  * @author Diagorn
  */
 class TuringPersonAdapter(
-    private val context: Context,
     private val actionListener: TuringPersonActionListener
 ) : RecyclerView.Adapter<TuringPersonViewHolder>() {
 
     private val turingPersons: MutableList<TuringPerson> = mutableListOf()
+    private lateinit var context: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TuringPersonViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = TuringPersonItemBinding.inflate(inflater, parent, false)
-        return TuringPersonViewHolder(binding)
+        val holder = TuringPersonViewHolder(binding)
+        context = holder.binding.root.context
+        return holder
     }
 
     override fun getItemCount() = turingPersons.size
