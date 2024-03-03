@@ -11,7 +11,7 @@ import androidx.fragment.app.setFragmentResult
 import com.turing.android.R
 import com.turing.android.databinding.FragmentAddPersonBinding
 import com.turing.android.dto.TuringPerson
-import com.turing.android.utils.navigateToFragment
+import com.turing.android.ui.Navigator
 
 /**
  * Фрагмент добавления нового активиста
@@ -29,7 +29,10 @@ class AddPersonFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddPersonBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.addPersonButton.setOnClickListener {
             if (isFormInvalid()) {
                 Toast.makeText(
@@ -50,38 +53,26 @@ class AddPersonFragment : Fragment() {
                     avatarUrl = avatarUrlEditText.text.toString()
                 )
 
-                if (person.id == -1L) {
-                    setFragmentResult(
-                        PersonListFragment.ADD_PERSON_KEY,
-                        bundleOf(NEW_PERSON_KEY to null)
-                    )
+                val result = if (person.id == -1L) {
+                    bundleOf(NEW_PERSON_KEY to null)
                 } else {
-                    setFragmentResult(
-                        PersonListFragment.ADD_PERSON_KEY,
-                        bundleOf(NEW_PERSON_KEY to person)
-                    )
+                    bundleOf(NEW_PERSON_KEY to person)
                 }
+                setFragmentResult(PersonListFragment.ADD_PERSON_KEY, result)
 
-                activity?.navigateToFragment(PersonListFragment.create())
+                (activity as? Navigator)?.navigateToFragment(PersonListFragment.create())
             }
         }
-        return binding.root
     }
 
     private fun isFormInvalid(): Boolean {
         with(binding) {
-            if (
-                !studentRadioButton.isChecked && !curatorRadioButton.isChecked
+            return@isFormInvalid !studentRadioButton.isChecked && !curatorRadioButton.isChecked
                 || ageEditText.text.isNullOrEmpty()
                 || avatarUrlEditText.text.isNullOrEmpty()
                 || nameEditText.text.isNullOrEmpty()
                 || surnameEditText.text.isNullOrEmpty()
-            ) {
-                return true
-            }
         }
-
-        return false
     }
 
     override fun onDestroyView() {

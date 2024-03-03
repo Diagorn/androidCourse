@@ -14,10 +14,10 @@ import com.turing.android.ds.DataSourceAction
 import com.turing.android.ds.DataSourceListener
 import com.turing.android.ds.TuringPersonDs
 import com.turing.android.dto.TuringPerson
+import com.turing.android.ui.Navigator
 import com.turing.android.ui.TuringPersonActionListener
 import com.turing.android.ui.TuringPersonAdapter
 import com.turing.android.utils.getParcelableObj
-import com.turing.android.utils.navigateToFragment
 
 /**
  * Фрагмент списка активистов Тьюринга
@@ -29,7 +29,6 @@ class PersonListFragment : Fragment() {
     private var _binding: FragmentPersonListBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: TuringPersonAdapter
-    private lateinit var turingPersonDs: TuringPersonDs
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,13 +36,15 @@ class PersonListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPersonListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        turingPersonDs = TuringPersonDs.getInstance()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        adapter = TuringPersonAdapter(requireContext(), object : TuringPersonActionListener {
+        adapter = TuringPersonAdapter(object : TuringPersonActionListener {
 
             override fun onDelete(person: TuringPerson) {
-                turingPersonDs.delete(person)
+                TuringPersonDs.delete(person)
             }
 
             override fun onDetails(person: TuringPerson) {
@@ -61,11 +62,13 @@ class PersonListFragment : Fragment() {
             turingPersonListView.layoutManager = layoutManager
             turingPersonListView.adapter = adapter
             addButton.setOnClickListener {
-                activity?.navigateToFragment(AddPersonFragment.create(newPersonId = turingPersonDs.getNextId()))
+                (activity as? Navigator)?.navigateToFragment(
+                    AddPersonFragment.create(newPersonId = TuringPersonDs.getNextId())
+                )
             }
         }
 
-        with(turingPersonDs) {
+        with(TuringPersonDs) {
             addListeners(listOf(addPersonListener, deletePersonListener))
             loadObjects()
             getAll().forEach { item -> addPersonListener.perform(item) }
@@ -75,10 +78,8 @@ class PersonListFragment : Fragment() {
             val newTuringPerson: TuringPerson? =
                 bundle.getParcelableObj(AddPersonFragment.NEW_PERSON_KEY)
             newTuringPerson ?: return@setFragmentResultListener
-            turingPersonDs.add(newTuringPerson)
+            TuringPersonDs.add(newTuringPerson)
         }
-
-        return binding.root
     }
 
     private val addPersonListener =
