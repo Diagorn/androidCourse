@@ -2,6 +2,8 @@ package com.turing.android.ds
 
 import com.turing.android.ds.DataSourceAction.INSERT
 import com.turing.android.ds.DataSourceAction.REMOVE
+import io.reactivex.rxjava3.core.Observable
+import java.util.concurrent.TimeUnit
 
 /**
  * Абстрактный класс датасорса
@@ -10,7 +12,7 @@ import com.turing.android.ds.DataSourceAction.REMOVE
  *
  * @author Diagorn
  */
-abstract class AbstractDataSource<T: HasId> {
+abstract class AbstractDataSource<T : HasId> {
 
     /**
      * Контейнер с объектами
@@ -26,6 +28,14 @@ abstract class AbstractDataSource<T: HasId> {
      * Получить список всех объектов в датасорсе
      */
     fun getAll(): List<T> = objects
+
+    fun getAllAsObservable(): Observable<T> {
+        return Observable.fromIterable(objects)
+            .concatMap { dataItem ->
+                Observable.timer(1, TimeUnit.SECONDS)
+                    .map { dataItem }
+            }
+    }
 
     /**
      * Добавить новый объект в список

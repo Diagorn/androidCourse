@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.setFragmentResult
 import com.turing.android.R
 import com.turing.android.databinding.FragmentAddPersonBinding
 import com.turing.android.dto.TuringPerson
-import com.turing.android.ui.Navigator
 
 /**
  * Фрагмент добавления нового активиста
@@ -59,8 +59,10 @@ class AddPersonFragment : Fragment() {
                     bundleOf(NEW_PERSON_KEY to person)
                 }
                 setFragmentResult(PersonListFragment.ADD_PERSON_KEY, result)
-
-                (activity as? Navigator)?.navigateToFragment(PersonListFragment.create())
+                (activity as FragmentActivity).supportFragmentManager.popBackStackImmediate(
+                    null,
+                    0
+                )
             }
         }
     }
@@ -68,10 +70,10 @@ class AddPersonFragment : Fragment() {
     private fun isFormInvalid(): Boolean {
         with(binding) {
             return@isFormInvalid !studentRadioButton.isChecked && !curatorRadioButton.isChecked
-                || ageEditText.text.isNullOrEmpty()
-                || avatarUrlEditText.text.isNullOrEmpty()
-                || nameEditText.text.isNullOrEmpty()
-                || surnameEditText.text.isNullOrEmpty()
+                    || ageEditText.text.isNullOrEmpty()
+                    || avatarUrlEditText.text.isNullOrEmpty()
+                    || nameEditText.text.isNullOrEmpty()
+                    || surnameEditText.text.isNullOrEmpty()
         }
     }
 

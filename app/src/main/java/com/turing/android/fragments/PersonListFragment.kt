@@ -1,11 +1,14 @@
 package com.turing.android.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.turing.android.R
@@ -14,10 +17,14 @@ import com.turing.android.ds.DataSourceAction
 import com.turing.android.ds.DataSourceListener
 import com.turing.android.ds.TuringPersonDs
 import com.turing.android.dto.TuringPerson
-import com.turing.android.ui.Navigator
 import com.turing.android.ui.TuringPersonActionListener
 import com.turing.android.ui.TuringPersonAdapter
 import com.turing.android.utils.getParcelableObj
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 /**
  * Фрагмент списка активистов Тьюринга
@@ -27,6 +34,7 @@ import com.turing.android.utils.getParcelableObj
 class PersonListFragment : Fragment() {
 
     private var _binding: FragmentPersonListBinding? = null
+    private val disposable = CompositeDisposable()
     private val binding get() = _binding!!
     private lateinit var adapter: TuringPersonAdapter
 
@@ -62,23 +70,46 @@ class PersonListFragment : Fragment() {
             turingPersonListView.layoutManager = layoutManager
             turingPersonListView.adapter = adapter
             addButton.setOnClickListener {
-                (activity as? Navigator)?.navigateToFragment(
-                    AddPersonFragment.create(newPersonId = TuringPersonDs.getNextId())
-                )
+                (activity as FragmentActivity).supportFragmentManager.beginTransaction()
+                    .add(
+                        R.id.fragmentContainerId,
+                        AddPersonFragment.create(newPersonId = TuringPersonDs.getNextId())
+                    )
+                    .addToBackStack(null)
+                    .commit()
             }
         }
 
         with(TuringPersonDs) {
             addListeners(listOf(addPersonListener, deletePersonListener))
             loadObjects()
-            getAll().forEach { item -> addPersonListener.perform(item) }
+            disposable.add(
+                getAllAsObservable()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        addPersonListener.perform(it)
+                    }, logError)
+            )
         }
 
         setFragmentResultListener(ADD_PERSON_KEY) { key, bundle ->
             val newTuringPerson: TuringPerson? =
                 bundle.getParcelableObj(AddPersonFragment.NEW_PERSON_KEY)
             newTuringPerson ?: return@setFragmentResultListener
-            TuringPersonDs.add(newTuringPerson)
+            disposable.add(
+                Single.just(newTuringPerson)
+                    .toObservable()
+                    .delay(3, TimeUnit.SECONDS) // Добавляем задержку в 3 секунды
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext { // Переходим на главный поток перед обновлением UI
+                        (activity as AppCompatActivity).runOnUiThread {
+                            TuringPersonDs.add(it)
+                        }
+                    }
+                    .subscribe({}, logError)
+            )
         }
     }
 
@@ -96,13 +127,19 @@ class PersonListFragment : Fragment() {
             }
         }
 
+    private val logError: (t: Throwable) -> Unit = { error ->
+        Log.e(LOG_TAG_SUBSCRIBE_FAILED, error.message ?: "Ошибка")
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        disposable.clear()
     }
 
     companion object {
         const val ADD_PERSON_KEY = "addPerson"
+        const val LOG_TAG_SUBSCRIBE_FAILED = "subscribeFailed"
 
         fun create(): PersonListFragment {
             return PersonListFragment()

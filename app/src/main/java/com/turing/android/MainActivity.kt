@@ -5,14 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.turing.android.databinding.ActivityMainBinding
 import com.turing.android.fragments.PersonListFragment
-import com.turing.android.ui.Navigator
 
 /**
  * Основное активити
  *
  * @author Diagorn
  */
-class MainActivity : AppCompatActivity(), Navigator {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -22,15 +21,8 @@ class MainActivity : AppCompatActivity(), Navigator {
         setContentView(binding.root)
 
         // Установка изначального экрана - списка активистов
-        navigateToFragment(PersonListFragment.create())
-    }
-
-    override val containerId: Int
-        get() = binding.fragmentContainerId.id
-
-    override fun navigateToFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(containerId, fragment)
+            .add(R.id.fragmentContainerId, PersonListFragment.create())
             .commit()
     }
 }
