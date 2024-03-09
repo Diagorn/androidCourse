@@ -14,16 +14,21 @@ import com.bumptech.glide.Glide
 import com.turing.android.R
 import com.turing.android.databinding.TuringPersonItemBinding
 import com.turing.android.dto.TuringPerson
+import java.util.function.Consumer
 import kotlin.system.exitProcess
 
 
 /**
  * Адаптер списка активистов тьюринга
  *
+ * @param onDelete - действие при удалении активиста
+ * @param onDetails - действие при клике на активиста
+ *
  * @author Diagorn
  */
 class TuringPersonAdapter(
-    private val actionListener: TuringPersonActionListener
+    private val onDelete: Consumer<TuringPerson>,
+    private val onDetails: Consumer<TuringPerson>
 ) : RecyclerView.Adapter<TuringPersonViewHolder>() {
 
     private val turingPersons: MutableList<TuringPerson> = mutableListOf()
@@ -89,7 +94,7 @@ class TuringPersonAdapter(
     private fun onClick(v: View, person: TuringPerson) {
         when (v.id) {
             R.id.moreImageViewButton -> showPopupMenu(v, person)
-            else -> actionListener.onDetails(person)
+            else -> onDetails.accept(person)
         }
     }
 
@@ -106,7 +111,7 @@ class TuringPersonAdapter(
 
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
-                DELETE_ID -> actionListener.onDelete(person)
+                DELETE_ID -> onDelete.accept(person)
                 // А что это такое - секрет :)
                 FUCK_OFF_ID -> exitProcess(-1)
             }
@@ -132,22 +137,3 @@ class TuringPersonAdapter(
  */
 class TuringPersonViewHolder(val binding: TuringPersonItemBinding) :
     RecyclerView.ViewHolder(binding.root)
-
-/**
- * Лисенер действий над элементом списка
- *
- * @author Diagorn
- */
-interface TuringPersonActionListener {
-    /**
-     * Действие после удаления активиста
-     * @param person - удаляемый активист
-     */
-    fun onDelete(person: TuringPerson)
-
-    /**
-     * Действие после клика на активиста
-     * @param person - активист, на котором кликнули
-     */
-    fun onDetails(person: TuringPerson)
-}

@@ -30,10 +30,10 @@ fun getTestTuringPersons(): List<TuringPerson> {
         ),
         TuringPerson(
             identifyer = 4L,
-            name = "Паша",
-            surname = "Жуков",
-            avatarUrl = "https://sun9-28.userapi.com/impf/c854220/v854220333/a9d50/q8myEsuB9LE.jpg?size=2160x2160&quality=96&sign=70350f745ba22b0b7ca5b579e3e7cecb&type=album",
-            age = 24,
+            name = "Саша",
+            surname = "Фофанов",
+            avatarUrl = "https://sun9-33.userapi.com/impg/hToLIsNdNHLv887iy_MYd--5BH70hKLrdXywWg/JTRoaV28q2M.jpg?size=1440x2160&quality=95&sign=f6904440f07d7caf094068dd0005807a&type=album",
+            age = 21,
             isStudent = false
         ),
     )

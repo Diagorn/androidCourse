@@ -59,7 +59,8 @@ class AddPersonFragment : Fragment() {
                     bundleOf(NEW_PERSON_KEY to person)
                 }
                 setFragmentResult(PersonListFragment.ADD_PERSON_KEY, result)
-                (activity as FragmentActivity).supportFragmentManager.popBackStackImmediate(
+                val activity = activity ?: return@setOnClickListener
+                activity.supportFragmentManager.popBackStackImmediate(
                     null,
                     0
                 )

@@ -6,9 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.turing.android.R
@@ -17,7 +15,6 @@ import com.turing.android.ds.DataSourceAction
 import com.turing.android.ds.DataSourceListener
 import com.turing.android.ds.TuringPersonDs
 import com.turing.android.dto.TuringPerson
-import com.turing.android.ui.TuringPersonActionListener
 import com.turing.android.ui.TuringPersonAdapter
 import com.turing.android.utils.getParcelableObj
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -49,19 +46,14 @@ class PersonListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        adapter = TuringPersonAdapter(object : TuringPersonActionListener {
-
-            override fun onDelete(person: TuringPerson) {
-                TuringPersonDs.delete(person)
-            }
-
-            override fun onDetails(person: TuringPerson) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.delalis_person_msg, person.name),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+        adapter = TuringPersonAdapter({ person ->
+            TuringPersonDs.delete(person)
+        }, { person ->
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.delalis_person_msg, person.name),
+                Toast.LENGTH_SHORT
+            ).show()
         })
         val layoutManager = LinearLayoutManager(requireContext())
         layoutManager.orientation = LinearLayoutManager.VERTICAL
@@ -70,7 +62,8 @@ class PersonListFragment : Fragment() {
             turingPersonListView.layoutManager = layoutManager
             turingPersonListView.adapter = adapter
             addButton.setOnClickListener {
-                (activity as FragmentActivity).supportFragmentManager.beginTransaction()
+                val activity = activity ?: return@setOnClickListener
+                activity.supportFragmentManager.beginTransaction()
                     .add(
                         R.id.fragmentContainerId,
                         AddPersonFragment.create(newPersonId = TuringPersonDs.getNextId())
@@ -99,16 +92,12 @@ class PersonListFragment : Fragment() {
             newTuringPerson ?: return@setFragmentResultListener
             disposable.add(
                 Single.just(newTuringPerson)
-                    .toObservable()
                     .delay(3, TimeUnit.SECONDS) // Добавляем задержку в 3 секунды
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnNext { // Переходим на главный поток перед обновлением UI
-                        (activity as AppCompatActivity).runOnUiThread {
-                            TuringPersonDs.add(it)
-                        }
-                    }
-                    .subscribe({}, logError)
+                    .subscribe({
+                        TuringPersonDs.add(it)
+                    }, logError)
             )
         }
     }
