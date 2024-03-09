@@ -20,8 +20,8 @@ class ClickerViewModel : ViewModel() {
     fun initData() {
         _clickerData.postValue(
             ClickerData(
-                predictionText = PredictionRepository.getRandomPrediction(),
-                predictionImageSrc = PredictionRepository.getRandomPredictionUrl()
+                predictionText = PredictionsDatasource.getRandomPrediction(),
+                predictionImageSrc = PredictionsDatasource.getRandomPredictionUrl()
             )
         )
     }

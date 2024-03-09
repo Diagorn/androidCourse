@@ -5,7 +5,7 @@ package com.turing.android
  *
  * @author Diagorn
  */
-object PredictionRepository {
+object PredictionsDatasource {
 
     /**
      * Получить случайную строку с предсказанием
